@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In the Space of Beyond 1 & 0 - Collective Poem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0e0956;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #f7f5f6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating pixel diamonds background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(217, 57, 65, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(247, 245, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(217, 57, 65, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-pixels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .pixel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transform: rotate(45deg);
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(45deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(45deg);
+            }
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 40px auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #f7f5f6 0%, #d93941 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: lowercase;
+        }
+
+        .subtitle {
+            color: #d93941;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Artist Statement Button - Right under subtitle */
+        .toggle-statement {
+            background: transparent;
+            border: 1px solid rgba(247, 245, 246, 0.2);
+            color: rgba(247, 245, 246, 0.6);
+            padding: 8px 16px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            text-transform: none;
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+
+        .toggle-statement:hover {
+            border-color: #d93941;
+            color: #f7f5f6;
+            background: rgba(217, 57, 65, 0.1);
+        }
+
+        .toggle-statement .arrow {
+            transition: transform 0.3s ease;
+            display: inline-block;
+            font-size: 0.8em;
+        }
+
+        .toggle-statement.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .artist-statement {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background: rgba(247, 245, 246, 0.03);
+            border: 1px solid rgba(247, 245, 246, 0.1);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .artist-statement.open {
+            max-height: 1000px;
+            padding: 30px;
+        }
+
+        .artist-statement h3 {
+            color: #d93941;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .artist-name {
+            color: #f7f5f6;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+
+        .artist-statement p {
+            color: rgba(247, 245, 246, 0.8);
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .artist-statement em {
+            color: #f7f5f6;
+            font-style: italic;
+        }
+
+        .statement-note {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(247, 245, 246, 0.1);
+            color: #d93941 !important;
+            text-align: center !important;
+            font-style: italic;
+        }
+
+        /* Question - Made bolder */
+        .question {
+            font-size: 1.7em;
+            margin-bottom: 30px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: #f7f5f6;
+            letter-spacing: -0.5px;
+        }
+
+        .instructions {
+            margin-bottom: 40px;
+            line-height: 1.8;
+            color: rgba(247, 245, 246, 0.7);
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+        }
+
+        .input-area {
+            margin: 40px 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid rgba(247, 245, 246, 0.2);
+            border-radius: 0;
+            background: rgba(247, 245, 246, 0.05);
+            color: #f7f5f6;
+            font-family: inherit;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #d93941;
+            background: rgba(247, 245, 246, 0.1);
+            box-shadow: 0 0 20px rgba(217, 57, 65, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(247, 245, 246, 0.3);
+        }
+
+        button.submit-btn {
+            margin-top: 20px;
+            padding: 14px 50px;
+            font-size: 1em;
+            background: #d93941;
+            color: #f7f5f6;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        button.submit-btn:hover {
+            background: #f7f5f6;
+            color: #0e0956;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(217, 57, 65, 0.3);
+        }
+
+        .counter {
+            margin-top: 30px;
+            color: rgba(247, 245, 246, 0.6);
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .counter span {
+            color: #d93941;
+            font-weight: 600;
+        }
+
+        .words-container {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(247, 245, 246, 0.1);
+        }
+
+        .words-title {
+            font-size: 0.9em;
+            color: rgba(247, 245, 246, 0.5);
+            margin-bottom: 30px;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .words-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            min-height: 100px;
+            padding: 20px;
+        }
+
+        .word {
+            padding: 10px 18px;
+            background: rgba(247, 245, 246, 0.05);
+            color: #f7f5f6;
+            font-size: 0.95em;
+            animation: fadeIn 1s ease;
+            border: 1px solid rgba(247, 245, 246, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .word:hover {
+            background: rgba(217, 57, 65, 0.2);
+            border-color: #d93941;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirmation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #d93941;
+            color: #f7f5f6;
+            padding: 30px 50px;
+            box-shadow: 0 10px 40px rgba(217, 57, 65, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .confirmation.show {
+            opacity: 1;
+        }
+
+        .info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.75em;
+            color: rgba(247, 245, 246, 0.4);
+            text-align: right;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .question {
+                font-size: 1.3em;
+            }
+            
+            .instructions {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-pixels" id="pixelContainer"></div>
+    
+    <div class="container">
+        <h1>in the space of beyond 1 & 0</h1>
+        <div class="subtitle">Collective Digital Poem</div>
+        
+        <!-- Artist Statement Button RIGHT UNDER Subtitle -->
+        <button class="toggle-statement" onclick="toggleStatement()" id="statementToggle">
+            About this artwork <span class="arrow">▼</span>
+        </button>
+        
+        <!-- Artist Statement (Hidden by default) -->
+        <div class="artist-statement" id="artistStatement">
+            <h3>Artist Statement</h3>
+            <div class="artist-name">Bin Youn</div>
+            <p>This work is inspired by the East Asian tradition of scholars gathering in nature to compose and exchange poetry—a practice known as <em>pungnyu</em> (풍류) in Korea. The word itself reveals its essence: <em>pung</em> (풍/風) means wind, and <em>ryu</em> (류/流) means flow—together suggesting the way art and life should move like wind and water, naturally and without force.</p>
+            
+            <p>These <em>seonbi</em> (scholar-artist) believed that true culture arose through spontaneous exchange, where one person's verse would inspire another's response, flowing from voice to voice like wind through leaves, creating layers of meaning that no single voice could achieve.</p>
+            
+            <p>Within RMIT Vietnam's global community, I transpose this analog tradition into our digital age. Just as <em>pungnyu</em> scholars found infinite expression within nature's patterns, the space beyond 1 and 0 contains everything that makes us human.</p>
+            
+            <p>This digital gathering invites our community to contribute fragments throughout the exhibition period. Each submission becomes part of a larger consciousness, creating the same spontaneous harmony that <em>pungnyu</em> sought centuries ago.</p>
+            
+            <p class="statement-note">The final collective poem will be compiled and released after the exhibition closes on September 18, 2025.</p>
+        </div>
+        
+        <!-- Main Question - BOLD -->
+        <div class="question">
+            "In the space of beyond 1 & 0, what do you find?"
+        </div>
+        
+        <div class="instructions">
+            <p>One word is enough</p>
+            <p>A color. A feeling. A memory</p>
+            <p>What you see now</p>
+            <p>What you remember</p>
+            <p>What you imagine coming</p>
+            <p style="margin-top: 15px;">Pick words from around you</p>
+            <p>From yesterday</p>
+            <p>From tomorrow</p>
+            <p style="margin-top: 15px; font-style: italic;">Whatever comes</p>
+            <p style="font-style: italic;">In any language</p>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="wordInput" placeholder="..." maxlength="50">
+            <button class="submit-btn" onclick="submitWord()">Add to poem</button>
+        </div>
+        
+        <div class="counter">
+            <span id="count">0</span> voices gathered
+        </div>
+        
+        <div class="words-container">
+            <div class="words-title">fragments becoming our poem...</div>
+            <div class="words-display" id="wordsDisplay"></div>
+        </div>
+    </div>
+    
+    <div class="confirmation" id="confirmation">
+        Your word joined the poem
+    </div>
+    
+    <div class="info">
+        RMIT Digital Media<br>
+        10 Years Exhibition<br>
+        13-18 Sep 2025
+    </div>
+
+    <script>
+        // Create floating pixels
+        function createPixels() {
+            const container = document.getElementById('pixelContainer');
+            const colors = ['#d93941', '#f7f5f6', 'rgba(217, 57, 65, 0.3)', 'rgba(247, 245, 246, 0.2)'];
+            
+            for (let i = 0; i < 15; i++) {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel';
+                pixel.style.left = Math.random() * 100 + '%';
+                pixel.style.animationDelay = Math.random() * 20 + 's';
+                pixel.style.animationDuration = (20 + Math.random() * 10) + 's';
+                pixel.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(pixel);
+            }
+        }
+        
+        // Initialize from localStorage
+        let words = JSON.parse(localStorage.getItem('collectivePoem')) || [];
+        let displayWords = [];
+        const MAX_DISPLAY = 30;
+        
+        // Display existing words on load
+        window.onload = function() {
+            createPixels();
+            updateDisplay();
+            updateCounter();
+            
+            // Allow Enter key to submit
+            document.getElementById('wordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitWord();
+                }
+            });
+        }
+        
+        // Google Form Configuration
+        const GOOGLE_FORM_ID = '1FAIpQLSc0N3f_H1vq-Xo19-UZpM_Ca_0WnGKH0QVYgdfUFbEmHenbvw';
+        const GOOGLE_FORM_ENTRY_ID = 'entry.879607282';
+        
+        function submitWord() {
+            const input = document.getElementById('wordInput');
+            const word = input.value.trim();
+            
+            if (word) {
+                // Add to local collection for display
+                const entry = {
+                    word: word,
+                    timestamp: new Date().toISOString()
+                };
+                
+                words.push(entry);
+                localStorage.setItem('collectivePoem', JSON.stringify(words));
+                
+                // Send to Google Sheets
+                sendToGoogleSheets(word);
+                
+                // Update display
+                addWordToDisplay(word);
+                updateCounter();
+                
+                // Show confirmation
+                showConfirmation();
+                
+                // Clear input
+                input.value = '';
+                
+                // Log for later export
+                console.log('New entry:', entry);
+            }
+        }
+        
+        function sendToGoogleSheets(word) {
+            const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
+            const formData = new FormData();
+            formData.append(GOOGLE_FORM_ENTRY_ID, word);
+            
+            // Send data to Google Form (no CORS issues with forms)
+            fetch(formUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                console.log('Submitted to Google Sheets:', word);
+            }).catch((error) => {
+                console.error('Error submitting to Google Sheets:', error);
+                // Still works even if this shows an error
+            });
+        }
+        
+        function addWordToDisplay(word) {
+            const display = document.getElementById('wordsDisplay');
+            
+            // Add new word
+            displayWords.push(word);
+            
+            // Keep only recent words
+            if (displayWords.length > MAX_DISPLAY) {
+                displayWords.shift();
+            }
+            
+            // Rebuild display
+            display.innerHTML = '';
+            displayWords.forEach(w => {
+                const wordElement = document.createElement('span');
+                wordElement.className = 'word';
+                wordElement.textContent = w;
+                display.appendChild(wordElement);
+            });
+        }
+        
+        function updateDisplay() {
+            // Show recent words
+            const recent = words.slice(-MAX_DISPLAY).map(entry => entry.word);
+            displayWords = recent;
+            
+            const display = document.getElementById('wordsDisplay');
+            display.innerHTML = '';
+            
+            recent.forEach(word => {
+                const wordElement = document.createElement('span');
+                wordElement.className = 'word';
+                wordElement.textContent = word;
+                display.appendChild(wordElement);
+            });
+        }
+        
+        function updateCounter() {
+            document.getElementById('count').textContent = words.length;
+        }
+        
+        function showConfirmation() {
+            const conf = document.getElementById('confirmation');
+            conf.classList.add('show');
+            setTimeout(() => {
+                conf.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Toggle artist statement
+        function toggleStatement() {
+            const statement = document.getElementById('artistStatement');
+            const toggle = document.getElementById('statementToggle');
+            
+            if (statement.classList.contains('open')) {
+                statement.classList.remove('open');
+                toggle.classList.remove('open');
+            } else {
+                statement.classList.add('open');
+                toggle.classList.add('open');
+            }
+        }
+        
+        // Function to export all data (call from console)
+        function exportPoem() {
+            const dataStr = JSON.stringify(words, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `collective-poem-${new Date().toISOString()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Make export function available globally
+        window.exportPoem = exportPoem;
+    </script>
+</body>
+</html>
