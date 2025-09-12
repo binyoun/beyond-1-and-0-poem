@@ -138,7 +138,6 @@
             overflow: hidden;
             transition: max-height 0.5s ease;
             background: rgba(247, 245, 246, 0.03);
-            /* border: 1px solid rgba(247, 245, 246, 0.1); */
             margin-bottom: 15px;
             text-align: justified;
         }
@@ -181,7 +180,6 @@
         .statement-note {
             margin-top: 25px;
             padding-top: 20px;
-            /*remove border top */
             color: #d93941 !important;
             text-align: center !important;
             font-style: italic;
@@ -260,6 +258,11 @@
             box-shadow: 0 5px 20px rgba(217, 57, 65, 0.3);
         }
 
+        button.submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .counter {
             margin-top: 30px;
             color: rgba(247, 245, 246, 0.6);
@@ -272,10 +275,20 @@
             font-weight: 600;
         }
 
+        .sync-status {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: rgba(247, 245, 246, 0.4);
+            font-style: italic;
+        }
+
+        .sync-status.loading {
+            color: #d93941;
+        }
+
         .words-container {
             margin-top: 30px;
             padding-top: 20px;
-            /* border-top: 1px solid rgba(247, 245, 246, 0.1); */
         }
 
         .words-title {
@@ -304,6 +317,11 @@
             border: 1px solid rgba(247, 245, 246, 0.1);
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
+        }
+
+        .word.new {
+            background: rgba(217, 57, 65, 0.2);
+            border-color: #d93941;
         }
 
         .word:hover {
@@ -417,12 +435,13 @@
         
         <div class="input-area">
             <input type="text" id="wordInput" placeholder=".t.y.p.e.h.e.r.e." maxlength="50">
-            <button class="submit-btn" onclick="submitWord()">let it leave to poem</button>
+            <button class="submit-btn" id="submitBtn" onclick="submitWord()">let it leave to poem</button>
         </div>
         
         <div class="counter">
             <span id="count">0</span> voices gathered
         </div>
+        <div class="sync-status" id="syncStatus"></div>
         
         <div class="words-container">
             <div class="words-title">leaves becoming our flow-poem...</div>
@@ -442,6 +461,25 @@
     </div>
 
     <script>
+        // ============================================
+        // GOOGLE SHEETS CSV URL - CONFIGURED FOR YOUR EXHIBITION
+        // ============================================
+        
+        // This is your actual Google Sheet CSV export with the correct sheet ID (gid)
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsTBMdx2sNFs59QDRfsF6XD-hyBRaOA-0nQDSc2TmExnlpjIplW_hTf_cY1hzSNgf1myu9_-jvnrdr/pub?gid=951027196&single=true&output=csv';
+        
+        // ============================================
+        // Google Form Configuration (keep your existing)
+        // ============================================
+        const GOOGLE_FORM_ID = '1FAIpQLSc0N3f_H1vq-Xo19-UZpM_Ca_0WnGKH0QVYgdfUFbEmHenbvw';
+        const GOOGLE_FORM_ENTRY_ID = 'entry.879607282';
+        
+        // Global variables
+        let allWords = []; // All words from the collective
+        let localSubmittedWords = new Set(); // Track words this user submitted
+        const MAX_DISPLAY = 50; // Show more words
+        let isSubmitting = false;
+        
         // Create floating pixels
         function createPixels() {
             const container = document.getElementById('pixelContainer');
@@ -458,120 +496,159 @@
             }
         }
         
-        // Initialize from localStorage
-        let words = JSON.parse(localStorage.getItem('collectivePoem')) || [];
-        let displayWords = [];
-        const MAX_DISPLAY = 30;
-        
-        // Display existing words on load
-        window.onload = function() {
-            createPixels();
-            updateDisplay();
-            updateCounter();
+        // Load words from Google Sheets
+        async function loadWordsFromSheet() {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = 'loading collective voices...';
+            statusEl.classList.add('loading');
             
-            // Allow Enter key to submit
-            document.getElementById('wordInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    submitWord();
-                }
-            });
-        }
-        
-        // Google Form Configuration
-        const GOOGLE_FORM_ID = '1FAIpQLSc0N3f_H1vq-Xo19-UZpM_Ca_0WnGKH0QVYgdfUFbEmHenbvw';
-        const GOOGLE_FORM_ENTRY_ID = 'entry.879607282';
-        
-        function submitWord() {
-            const input = document.getElementById('wordInput');
-            const word = input.value.trim();
+            // Skip if URL not configured
+            if (SHEET_CSV_URL.includes('YOUR_SHEET_ID')) {
+                console.warn('Please configure your Google Sheets CSV URL');
+                statusEl.textContent = 'configure sheet URL to see collective poems';
+                return;
+            }
             
-            if (word) {
-                // Add to local collection for display
-                const entry = {
-                    word: word,
-                    timestamp: new Date().toISOString()
-                };
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Failed to fetch');
                 
-                words.push(entry);
-                localStorage.setItem('collectivePoem', JSON.stringify(words));
+                const text = await response.text();
+                const lines = text.split('\n');
                 
-                // Send to Google Sheets
-                sendToGoogleSheets(word);
+                // Parse CSV - assuming first column contains words
+                // Skip header row if it exists
+                const words = [];
+                lines.forEach((line, index) => {
+                    // Skip header if first line contains "Timestamp" or similar
+                    if (index === 0 && line.toLowerCase().includes('timestamp')) return;
+                    
+                    // Parse CSV line (handle commas in quotes if needed)
+                    const match = line.match(/[^,]*"[^"]*"[^,]*|[^,]+/g);
+                    if (match && match.length > 0) {
+                        // Get the word (assuming it's in the second column after timestamp)
+                        const word = match[1] || match[0];
+                        if (word && word.trim()) {
+                            words.push(word.replace(/"/g, '').trim());
+                        }
+                    }
+                });
                 
-                // Update display
-                addWordToDisplay(word);
+                allWords = words;
+                displayWords();
                 updateCounter();
                 
-                // Show confirmation
-                showConfirmation();
+                statusEl.textContent = `connected to collective flow`;
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    statusEl.classList.remove('loading');
+                }, 3000);
                 
-                // Clear input
-                input.value = '';
+            } catch (error) {
+                console.error('Error loading words:', error);
+                statusEl.textContent = 'flowing offline - words still being collected';
+                statusEl.classList.remove('loading');
                 
-                // Log for later export
-                console.log('New entry:', entry);
+                // Load from localStorage as fallback
+                const localWords = JSON.parse(localStorage.getItem('localSubmissions')) || [];
+                allWords = localWords;
+                displayWords();
+                updateCounter();
             }
         }
         
-        function sendToGoogleSheets(word) {
-            const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
-            const formData = new FormData();
-            formData.append(GOOGLE_FORM_ENTRY_ID, word);
-            
-            // Send data to Google Form (no CORS issues with forms)
-            fetch(formUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: formData
-            }).then(() => {
-                console.log('Submitted to Google Sheets:', word);
-            }).catch((error) => {
-                console.error('Error submitting to Google Sheets:', error);
-                // Still works even if this shows an error
-            });
-        }
-        
-        function addWordToDisplay(word) {
-            const display = document.getElementById('wordsDisplay');
-            
-            // Add new word
-            displayWords.push(word);
-            
-            // Keep only recent words
-            if (displayWords.length > MAX_DISPLAY) {
-                displayWords.shift();
-            }
-            
-            // Rebuild display
-            display.innerHTML = '';
-            displayWords.forEach(w => {
-                const wordElement = document.createElement('span');
-                wordElement.className = 'word';
-                wordElement.textContent = w;
-                display.appendChild(wordElement);
-            });
-        }
-        
-        function updateDisplay() {
-            // Show recent words
-            const recent = words.slice(-MAX_DISPLAY).map(entry => entry.word);
-            displayWords = recent;
-            
+        // Display words
+        function displayWords() {
             const display = document.getElementById('wordsDisplay');
             display.innerHTML = '';
             
-            recent.forEach(word => {
+            // Show recent words (last MAX_DISPLAY)
+            const wordsToShow = allWords.slice(-MAX_DISPLAY);
+            
+            wordsToShow.forEach(word => {
                 const wordElement = document.createElement('span');
                 wordElement.className = 'word';
+                
+                // Highlight if this user submitted it
+                if (localSubmittedWords.has(word)) {
+                    wordElement.classList.add('new');
+                }
+                
                 wordElement.textContent = word;
                 display.appendChild(wordElement);
             });
         }
         
-        function updateCounter() {
-            document.getElementById('count').textContent = words.length;
+        // Submit word
+        async function submitWord() {
+            if (isSubmitting) return;
+            
+            const input = document.getElementById('wordInput');
+            const word = input.value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!word) return;
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'flowing...';
+            
+            // Add to local tracking
+            localSubmittedWords.add(word);
+            
+            // Save locally first (immediate feedback)
+            const localSubmissions = JSON.parse(localStorage.getItem('localSubmissions')) || [];
+            localSubmissions.push(word);
+            localStorage.setItem('localSubmissions', JSON.stringify(localSubmissions));
+            
+            // Add to display immediately
+            allWords.push(word);
+            displayWords();
+            updateCounter();
+            
+            // Send to Google Sheets
+            try {
+                await sendToGoogleSheets(word);
+                showConfirmation();
+            } catch (error) {
+                console.error('Error submitting:', error);
+                // Still show confirmation - word is saved locally
+                showConfirmation();
+            }
+            
+            // Clear input and reset button
+            input.value = '';
+            setTimeout(() => {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'let it leave to poem';
+            }, 1000);
+            
+            // Reload words after a delay to get updates
+            setTimeout(() => {
+                loadWordsFromSheet();
+            }, 3000);
         }
         
+        // Send to Google Sheets via Form
+        function sendToGoogleSheets(word) {
+            const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
+            const formData = new FormData();
+            formData.append(GOOGLE_FORM_ENTRY_ID, word);
+            
+            return fetch(formUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
+        }
+        
+        // Update counter
+        function updateCounter() {
+            document.getElementById('count').textContent = allWords.length;
+        }
+        
+        // Show confirmation
         function showConfirmation() {
             const conf = document.getElementById('confirmation');
             conf.classList.add('show');
@@ -594,21 +671,48 @@
             }
         }
         
-        // Function to export all data (call from console)
-        function exportPoem() {
-            const dataStr = JSON.stringify(words, null, 2);
+        // Auto-refresh words every 30 seconds
+        function startAutoRefresh() {
+            setInterval(() => {
+                loadWordsFromSheet();
+            }, 30000); // Refresh every 30 seconds
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            createPixels();
+            
+            // Load any local submissions first
+            const localSubmissions = JSON.parse(localStorage.getItem('localSubmissions')) || [];
+            localSubmissions.forEach(word => localSubmittedWords.add(word));
+            
+            // Load words from sheet
+            loadWordsFromSheet();
+            
+            // Start auto-refresh
+            startAutoRefresh();
+            
+            // Allow Enter key to submit
+            document.getElementById('wordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitWord();
+                }
+            });
+        }
+        
+        // Export function (for debugging/backup)
+        window.exportLocalPoems = function() {
+            const localSubmissions = JSON.parse(localStorage.getItem('localSubmissions')) || [];
+            const dataStr = JSON.stringify(localSubmissions, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             
-            const exportFileDefaultName = `collective-poem-${new Date().toISOString()}.json`;
+            const exportFileDefaultName = `local-poems-${new Date().toISOString()}.json`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
         }
-        
-        // Make export function available globally
-        window.exportPoem = exportPoem;
     </script>
 </body>
 </html>
