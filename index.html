@@ -159,9 +159,9 @@
         .artist-name {
             color: #f7f5f6;
             font-weight: 600;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 0.90em;
+            text-align: right;
+            margin-bottom: 20px;
+            font-size: 0.95em;
             letter-spacing: 1px;
         }
 
@@ -287,8 +287,8 @@
         }
 
         .words-container {
-            margin-top: 20px;
-            padding-top: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
         }
 
         .words-title {
@@ -303,16 +303,16 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
-            min-height: 70px;
-            padding: 10px;
+            gap: 12px;
+            min-height: 100px;
+            padding: 20px;
         }
 
         .word {
-            padding: 10px 10px;
+            padding: 10px 18px;
             background: rgba(247, 245, 246, 0.05);
             color: #f7f5f6;
-            font-size: 0.90em;
+            font-size: 0.95em;
             animation: fadeIn 1s ease;
             border: 1px solid rgba(247, 245, 246, 0.1);
             transition: all 0.3s ease;
@@ -562,12 +562,17 @@
             const display = document.getElementById('wordsDisplay');
             display.innerHTML = '';
             
-            // Show recent words (last MAX_DISPLAY)
-            const wordsToShow = allWords.slice(-MAX_DISPLAY);
+            // Show recent words with NEWEST FIRST (reverse the array)
+            const wordsToShow = allWords.slice(-MAX_DISPLAY).reverse();
             
-            wordsToShow.forEach(word => {
+            wordsToShow.forEach((word, index) => {
                 const wordElement = document.createElement('span');
                 wordElement.className = 'word';
+                
+                // Highlight the very newest word briefly
+                if (index === 0) {
+                    wordElement.style.animation = 'fadeIn 1.5s ease';
+                }
                 
                 // Highlight if this user submitted it
                 if (localSubmittedWords.has(word)) {
