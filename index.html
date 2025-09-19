@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>the space beyond 1 & 0 - collective poem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0e0956;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #f7f5f6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating pixel diamonds background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(217, 57, 65, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(247, 245, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(217, 57, 65, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-pixels {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .pixel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transform: rotate(45deg);
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(45deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(45deg);
+            }
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 12px auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #f7f5f6 0%, #d93941 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: lowercase;
+        }
+
+        .subtitle {
+            color: #d93941;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Artist Statement Button - Right under subtitle */
+        .toggle-statement {
+            background: transparent;
+            border: 1px solid rgba(247, 245, 246, 0.2);
+            color: rgba(247, 245, 246, 0.6);
+            padding: 8px 16px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            text-transform: none;
+            font-weight: 400;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .toggle-statement:hover {
+            border-color: #d93941;
+            color: #f7f5f6;
+            background: rgba(217, 57, 65, 0.1);
+        }
+
+        .toggle-statement .arrow {
+            transition: transform 0.3s ease;
+            display: inline-block;
+            font-size: 0.8em;
+        }
+
+        .toggle-statement.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .artist-statement {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background: rgba(247, 245, 246, 0.03);
+            margin-bottom: 15px;
+            text-align: justified;
+        }
+
+        .artist-statement.open {
+            max-height: 1000px;
+            padding: 30px;
+        }
+
+        .artist-statement h3 {
+            color: #d93941;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .artist-name {
+            color: #f7f5f6;
+            font-weight: 600;
+            text-align: right;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+
+        .artist-statement p {
+            color: rgba(247, 245, 246, 0.8);
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .artist-statement em {
+            color: #f7f5f6;
+            font-style: italic;
+        }
+
+        .statement-note {
+            margin-top: 25px;
+            padding-top: 20px;
+            color: #d93941 !important;
+            text-align: center !important;
+            font-style: italic;
+        }
+
+        /* Question - Made bolder */
+        .question {
+            font-size: 1.7em;
+            margin-bottom: 12px;
+            font-weight: 700;
+            line-height: 1.0;
+            color: #f7f5f6;
+            letter-spacing: -0.5px;
+        }
+
+        .instructions {
+            margin-bottom: 10px;
+            line-height: 1.8;
+            color: rgba(247, 245, 246, 0.7);
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+        }
+
+        .input-area {
+            margin: 40px 0;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid rgba(247, 245, 246, 0.2);
+            border-radius: 0;
+            background: rgba(247, 245, 246, 0.05);
+            color: #f7f5f6;
+            font-family: inherit;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #d93941;
+            background: rgba(247, 245, 246, 0.1);
+            box-shadow: 0 0 20px rgba(217, 57, 65, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(247, 245, 246, 0.3);
+        }
+
+        button.submit-btn {
+            margin-top: 20px;
+            padding: 14px 50px;
+            font-size: 1em;
+            background: #d93941;
+            color: #f7f5f6;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        button.submit-btn:hover {
+            background: #f7f5f6;
+            color: #0e0956;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(217, 57, 65, 0.3);
+        }
+
+        button.submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .counter {
+            margin-top: 30px;
+            color: rgba(247, 245, 246, 0.6);
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .counter span {
+            color: #d93941;
+            font-weight: 600;
+        }
+
+        .sync-status {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: rgba(247, 245, 246, 0.4);
+            font-style: italic;
+        }
+
+        .sync-status.loading {
+            color: #d93941;
+        }
+
+        .words-container {
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .words-title {
+            font-size: 0.9em;
+            color: rgba(247, 245, 246, 0.5);
+            margin-bottom: 30px;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .words-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            min-height: 100px;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Eastern landscape flow layout */
+        .words-display.flow-layout {
+            display: block;
+            padding: 60px 20px;
+            min-height: 400px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .word {
+            padding: 10px 18px;
+            background: rgba(247, 245, 246, 0.05);
+            color: #f7f5f6;
+            font-size: 0.95em;
+            animation: fadeIn 1s ease;
+            border: 1px solid rgba(247, 245, 246, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Cloud-like floating words */
+        .word.cloud-flow {
+            position: absolute;
+            padding: 8px 20px;
+            background: rgba(247, 245, 246, 0.03);
+            border: 1px solid rgba(247, 245, 246, 0.08);
+            border-radius: 50px;
+            font-size: 0.9em;
+            transform-origin: center;
+            animation: floatCloud 20s infinite ease-in-out;
+        }
+
+        @keyframes floatCloud {
+            0%, 100% { 
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 0.7;
+            }
+            25% { 
+                transform: translateX(20px) translateY(-10px) scale(1.05);
+                opacity: 0.9;
+            }
+            50% { 
+                transform: translateX(-15px) translateY(5px) scale(0.95);
+                opacity: 0.8;
+            }
+            75% { 
+                transform: translateX(10px) translateY(-5px) scale(1.02);
+                opacity: 0.85;
+            }
+        }
+
+        /* Different sizes for depth */
+        .word.cloud-flow.size-small {
+            font-size: 0.75em;
+            opacity: 0.5;
+            animation-duration: 25s;
+        }
+
+        .word.cloud-flow.size-medium {
+            font-size: 0.9em;
+            opacity: 0.7;
+            animation-duration: 22s;
+        }
+
+        .word.cloud-flow.size-large {
+            font-size: 1.1em;
+            opacity: 0.9;
+            animation-duration: 18s;
+        }
+
+        .word.new {
+            background: rgba(217, 57, 65, 0.2);
+            border-color: #d93941;
+        }
+
+        .word:hover {
+            background: rgba(217, 57, 65, 0.2);
+            border-color: #d93941;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .confirmation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #d93941;
+            color: #f7f5f6;
+            padding: 30px 50px;
+            box-shadow: 0 10px 40px rgba(217, 57, 65, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .confirmation.show {
+            opacity: 1;
+        }
+
+        .info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.75em;
+            color: rgba(247, 245, 246, 0.4);
+            text-align: right;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .question {
+                font-size: 1.3em;
+            }
+            
+            .instructions {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-pixels" id="pixelContainer"></div>
+    
+    <div class="container">
+        <h1>the space beyond 1 & 0</h1>
+        <div class="subtitle">Collective Digital Poem</div>
+        
+        <!-- Artist Statement Button RIGHT UNDER Subtitle -->
+        <button class="toggle-statement" onclick="toggleStatement()" id="statementToggle">
+            artist statement <span class="arrow">▼</span>
+        </button>
+        
+        <!-- Artist Statement (Hidden by default) -->
+        <div class="artist-statement" id="artistStatement">
+            <div class="artist-name">Bin Youn</div>
+            <p>This work is inspired by the East Asian tradition of scholars gathering in nature to compose and exchange poetry, a practice known as <em>Pungryu</em> (풍류) in Korea. The word itself reveals its essence: <em>Pung</em> (풍/風) means wind, and <em>Ryu</em> (류/流) means flow—together suggesting the way art and life should move like wind and water, naturally and without force.</p>
+            
+            <p>These <em>Seonbi(선비)</em> (scholar-artists) believed that true culture arose through spontaneous exchange, where one person's verse would inspire another's response, flowing from voice to voice like wind through leaves, creating layers of meaning that no single voice could achieve.</p>
+            
+            <p>Within diverse RMIT community, I transpose this analog tradition into our digital age. Just as <em>Pungryu</em> scholars found infinite expression within nature's patterns, the space beyond 1 and 0 contains everything that makes us flow.</p>
+            
+            <p>This digital gathering invites our community to contribute fragments throughout the exhibition period. Each submission becomes part of a larger consciousness, creating the same spontaneous harmony that <em>Pungryu</em> sought centuries ago.</p>
+            
+            <p class="statement-note">The final collective poem will be compiled and released after the exhibition closes on September 18, 2025.</p>
+        </div>
+        
+        <!-- Content Moderation Notice -->
+        <div style="margin-top: 15px; padding: 12px 20px; background: rgba(247, 245, 246, 0.03); border: 1px solid rgba(247, 245, 246, 0.1);">
+            <p style="color: rgba(247, 245, 246, 0.6); font-size: 0.75em; text-align: center; line-height: 1.6; font-style: italic;">
+                <strong style="color: rgba(247, 245, 246, 0.7);">Curatorial Note:</strong> In the spirit of <em>Pungryu</em> and collective harmony, submissions undergo gentle moderation. 
+                Content promoting violence, hate speech, or divisive political rhetoric may be filtered to maintain the poetic flow 
+                and contemplative nature of our shared digital landscape. We seek words that flow like water and wind.
+            </p>
+        </div>
+        
+        <!-- Main Question - BOLD -->
+        <div class="question">"beyond 1 & 0 - what do you find?"</div>
+        
+        <div class="instructions">
+            <p>ㅇ is enough</p>
+            <p>ẵ light-color ẵ wave-form ẵ thing-some</p>
+            <p>what you  - now</p>
+            <p>what you remember</p>
+            <p>what you - coming</p>
+            <p style="margin-top: 15px;">Pick th-in-gs around</p>
+            <p>from you</p>
+            <p>from yesterday</p>
+            <p>from tomorrow</p>
+            <p style="margin-top: 15px; font-style: italic;">whatever comes in/out </p>
+            <p style="font-style: italic;">any ㅁother-tongue</p>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="wordInput" placeholder=".t.y.p.e.h.e.r.e." maxlength="50">
+            <button class="submit-btn" id="submitBtn" onclick="submitWord()">let it leave to poem</button>
+        </div>
+        
+        <div class="counter">
+            <span id="count">0</span> voices gathered
+        </div>
+        <div class="sync-status" id="syncStatus"></div>
+        
+        <div class="words-container">
+            <div class="words-title">leaves becoming our flow-poem...</div>
+            <div class="words-display" id="wordsDisplay"></div>
+        </div>
+    </div>
+    
+    <div class="confirmation" id="confirmation">
+        your word drifts into the space
+    </div>
+    
+    <div class="info">
+        beyond 1&0 Exhibition<br>
+        13-18 Sep 2025<br>
+        10 Years Digital Media<br>
+        RMIT University<br>
+    </div>
+
+    <script>
+        // ============================================
+        // EXHIBITION SETTINGS
+        // ============================================
+        
+        // Set the closing date/time for submissions (September 18, 2025)
+        const EXHIBITION_CLOSE_DATE = new Date('2025-09-18T23:59:59');  // Adjust time as needed
+        // For testing, you can use a closer date like:
+        // const EXHIBITION_CLOSE_DATE = new Date('2025-09-19T15:00:00');
+        
+        // Check if exhibition has ended
+        function hasExhibitionEnded() {
+            return new Date() > EXHIBITION_CLOSE_DATE;
+        }
+        
+        // Shuffle array function for random display
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // Your Google Sheet CSV export URL
+        const SHEET_ID = '2PACX-1vSsTBMdx2sNFs59QDRfsF6XD-hyBRaOA-0nQDSc2TmExnlpjIplW_hTf_cY1hzSNgf1myu9_-jvnrdr';
+        const GID = '951027196';
+        
+        // Direct URL first (in case CORS is now allowed)
+        const DIRECT_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=${GID}&single=true&output=csv`;
+        
+        // Multiple CORS proxy options to try
+        const CORS_PROXIES = [
+            'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
+            'https://proxy.cors.sh/',
+            'https://cors-anywhere.herokuapp.com/'
+        ];
+        
+        // ============================================
+        // Google Form Configuration (keep your existing)
+        // ============================================
+        const GOOGLE_FORM_ID = '1FAIpQLSc0N3f_H1vq-Xo19-UZpM_Ca_0WnGKH0QVYgdfUFbEmHenbvw';
+        const GOOGLE_FORM_ENTRY_ID = 'entry.879607282';
+        
+        // Global variables
+        let allWords = []; // All words from the collective
+        let localSubmittedWords = new Set(); // Track words this user submitted
+        const MAX_DISPLAY = 50; // Show more words
+        let isSubmitting = false;
+        
+        // Create floating pixels
+        function createPixels() {
+            const container = document.getElementById('pixelContainer');
+            const colors = ['#d93941', '#f7f5f6', 'rgba(217, 57, 65, 0.3)', 'rgba(247, 245, 246, 0.2)'];
+            
+            for (let i = 0; i < 15; i++) {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel';
+                pixel.style.left = Math.random() * 100 + '%';
+                pixel.style.animationDelay = Math.random() * 20 + 's';
+                pixel.style.animationDuration = (20 + Math.random() * 10) + 's';
+                pixel.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(pixel);
+            }
+        }
+        
+        // Load words from Google Sheets
+        async function loadWordsFromSheet() {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = 'loading collective voices...';
+            statusEl.classList.add('loading');
+            
+            let success = false;
+            
+            // First try direct URL
+            console.log('Attempting direct fetch...');
+            try {
+                const response = await fetch(DIRECT_URL);
+                if (response.ok) {
+                    const text = await response.text();
+                    parseAndDisplayWords(text);
+                    success = true;
+                    console.log('Direct fetch worked!');
+                }
+            } catch (e) {
+                console.log('Direct fetch failed, trying proxies...');
+            }
+            
+            // If direct failed, try proxies
+            if (!success) {
+                for (const proxy of CORS_PROXIES) {
+                    try {
+                        const proxyUrl = proxy + encodeURIComponent(DIRECT_URL);
+                        console.log('Trying proxy:', proxy);
+                        
+                        const response = await fetch(proxyUrl);
+                        if (response.ok) {
+                            const text = await response.text();
+                            parseAndDisplayWords(text);
+                            success = true;
+                            console.log('Proxy worked:', proxy);
+                            break;
+                        }
+                    } catch (e) {
+                        console.log('Proxy failed:', proxy);
+                    }
+                }
+            }
+            
+            // If nothing worked, DON'T use localStorage fallback for display
+            if (!success) {
+                console.log('Could not fetch from sheet. Working in offline mode.');
+                statusEl.textContent = 'working offline - submissions still being saved';
+                statusEl.classList.remove('loading');
+                
+                // Only show truly empty state, don't load old cached data
+                allWords = [];
+                displayWords();
+                updateCounter();
+                
+                // Show message
+                const display = document.getElementById('wordsDisplay');
+                display.innerHTML = '<div style="color: rgba(247, 245, 246, 0.7); padding: 20px; text-align: center; font-style: italic;">connecting to collective consciousness...<br>your words are being gathered in the cloud</div>';
+            }
+        }
+        
+        // Parse CSV and display words
+        function parseAndDisplayWords(csvText) {
+            console.log('Parsing CSV data...');
+            const lines = csvText.split(/\r?\n/);
+            const words = [];
+            
+            lines.forEach((line, index) => {
+                // Skip empty lines
+                if (!line.trim()) return;
+                
+                // Skip header
+                if (index === 0 && (line.toLowerCase().includes('timestamp') || line.toLowerCase().includes('entry'))) {
+                    return;
+                }
+                
+                // Parse line
+                let word = '';
+                
+                // Handle quoted CSV
+                if (line.includes('"')) {
+                    const matches = line.match(/"([^"]*)"/g);
+                    if (matches && matches.length >= 2) {
+                        word = matches[1].replace(/"/g, '');
+                    } else if (matches && matches.length === 1) {
+                        word = matches[0].replace(/"/g, '');
+                    }
+                } else {
+                    // Simple split
+                    const parts = line.split(',');
+                    word = parts.length >= 2 ? parts[1] : parts[0];
+                }
+                
+                // Clean and add
+                word = word.trim();
+                if (word && !word.includes('entry.') && word.length > 0) {
+                    words.push(word);
+                }
+            });
+            
+            console.log('Parsed', words.length, 'words');
+            
+            allWords = words;
+            displayWords();
+            updateCounter();
+            
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.textContent = 'connected to collective flow';
+            setTimeout(() => {
+                statusEl.textContent = '';
+                statusEl.classList.remove('loading');
+            }, 3000);
+        }
+        
+        // Display words
+        function displayWords() {
+            const display = document.getElementById('wordsDisplay');
+            display.innerHTML = '';
+            
+            let wordsToShow;
+            
+            if (hasExhibitionEnded()) {
+                // After exhibition: show ALL words in Eastern landscape flow
+                wordsToShow = shuffleArray(allWords);
+                
+                // Add flow layout class
+                display.classList.add('flow-layout');
+                
+                // Create Eastern landscape cloud formation
+                const centerX = display.offsetWidth / 2;
+                const centerY = 200;
+                
+                wordsToShow.forEach((word, index) => {
+                    const wordElement = document.createElement('span');
+                    wordElement.className = 'word cloud-flow';
+                    
+                    // Create flowing water/cloud pattern
+                    const angle = (index / wordsToShow.length) * Math.PI * 4; // Spiral
+                    const radius = 50 + (index * 3); // Expanding spiral
+                    const waveOffset = Math.sin(index * 0.5) * 30; // Wave pattern
+                    
+                    // Position in flowing pattern
+                    const x = centerX + Math.cos(angle) * radius + waveOffset;
+                    const y = centerY + Math.sin(angle) * radius * 0.6 + (Math.sin(index * 0.3) * 20);
+                    
+                    wordElement.style.left = `${x}px`;
+                    wordElement.style.top = `${y}px`;
+                    
+                    // Vary sizes for depth (mountain/cloud layers)
+                    const sizes = ['size-small', 'size-medium', 'size-large'];
+                    wordElement.classList.add(sizes[index % 3]);
+                    
+                    // Stagger animations
+                    wordElement.style.animationDelay = `${(index * 0.1) % 5}s`;
+                    
+                    // Vary opacity for mist effect
+                    const baseOpacity = 0.4 + (Math.random() * 0.4);
+                    wordElement.style.opacity = baseOpacity;
+                    
+                    wordElement.textContent = word;
+                    display.appendChild(wordElement);
+                });
+                
+                // Adjust container height based on content
+                display.style.minHeight = `${centerY + (wordsToShow.length * 2)}px`;
+                
+            } else {
+                // During exhibition: show recent words with NEWEST FIRST
+                wordsToShow = allWords.slice(-MAX_DISPLAY).reverse();
+                
+                wordsToShow.forEach((word, index) => {
+                    const wordElement = document.createElement('span');
+                    wordElement.className = 'word';
+                    
+                    // Highlight the very newest word briefly
+                    if (index === 0) {
+                        wordElement.style.animation = 'fadeIn 1.5s ease';
+                    }
+                    
+                    // Highlight if this user submitted it
+                    if (localSubmittedWords.has(word)) {
+                        wordElement.classList.add('new');
+                    }
+                    
+                    wordElement.textContent = word;
+                    display.appendChild(wordElement);
+                });
+            }
+        }
+        
+        // Submit word
+        async function submitWord() {
+            if (isSubmitting) return;
+            
+            const input = document.getElementById('wordInput');
+            const word = input.value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!word) return;
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'flowing...';
+            
+            // Add to local tracking
+            localSubmittedWords.add(word);
+            
+            // Save locally first (immediate feedback)
+            const localSubmissions = JSON.parse(localStorage.getItem('localSubmissions')) || [];
+            localSubmissions.push(word);
+            localStorage.setItem('localSubmissions', JSON.stringify(localSubmissions));
+            
+            // Add to display immediately
+            allWords.push(word);
+            displayWords();
+            updateCounter();
+            
+            // Send to Google Sheets
+            try {
+                await sendToGoogleSheets(word);
+                showConfirmation();
+            } catch (error) {
+                console.error('Error submitting:', error);
+                // Still show confirmation - word is saved locally
+                showConfirmation();
+            }
+            
+            // Clear input and reset button
+            input.value = '';
+            setTimeout(() => {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'let it leave to poem';
+            }, 1000);
+            
+            // Reload words after a delay to get updates
+            setTimeout(() => {
+                loadWordsFromSheet();
+            }, 3000);
+        }
+        
+        // Send to Google Sheets via Form
+        function sendToGoogleSheets(word) {
+            const formUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`;
+            const formData = new FormData();
+            formData.append(GOOGLE_FORM_ENTRY_ID, word);
+            
+            return fetch(formUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
+        }
+        
+        // Update counter
+        function updateCounter() {
+            document.getElementById('count').textContent = allWords.length;
+        }
+        
+        // Show confirmation
+        function showConfirmation() {
+            const conf = document.getElementById('confirmation');
+            conf.classList.add('show');
+            setTimeout(() => {
+                conf.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Toggle artist statement
+        function toggleStatement() {
+            const statement = document.getElementById('artistStatement');
+            const toggle = document.getElementById('statementToggle');
+            
+            if (statement.classList.contains('open')) {
+                statement.classList.remove('open');
+                toggle.classList.remove('open');
+            } else {
+                statement.classList.add('open');
+                toggle.classList.add('open');
+            }
+        }
+        
+        // Auto-refresh words every 30 seconds
+        function startAutoRefresh() {
+            setInterval(() => {
+                loadWordsFromSheet();
+            }, 30000); // Refresh every 30 seconds
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            createPixels();
+            
+            // Check if exhibition has ended
+            if (hasExhibitionEnded()) {
+                // Hide input area
+                document.querySelector('.input-area').style.display = 'none';
+                document.querySelector('.instructions').style.display = 'none';
+                
+                // Update question to past tense
+                document.querySelector('.question').innerHTML = '"beyond 1 & 0 - what did we find?"';
+                
+                // Update counter text
+                const counterEl = document.querySelector('.counter');
+                counterEl.innerHTML = '<span id="count">0</span> voices gathered over the exhibition';
+                
+                // Update words title
+                document.querySelector('.words-title').textContent = 'our collective flow-poem:';
+                
+                // Add completion notice
+                const notice = document.createElement('div');
+                notice.style.cssText = 'color: #d93941; margin: 20px 0; font-style: italic; font-size: 0.9em;';
+                notice.textContent = 'Exhibition concluded • September 18, 2025';
+                document.querySelector('.container').insertBefore(notice, document.querySelector('.words-container'));
+            }
+            
+            // Load words from sheet (primary source)
+            loadWordsFromSheet();
+            
+            // Start auto-refresh (less frequent after exhibition)
+            if (hasExhibitionEnded()) {
+                setInterval(() => loadWordsFromSheet(), 60000); // Every minute
+            } else {
+                startAutoRefresh(); // Every 30 seconds
+            }
+            
+            // Allow Enter key to submit (only during exhibition)
+            if (!hasExhibitionEnded()) {
+                document.getElementById('wordInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        submitWord();
+                    }
+                });
+            }
+        }
+        
+        // Function to clear cache (can be called from console)
+        window.clearLocalCache = function() {
+            localStorage.removeItem('localSubmissions');
+            localStorage.removeItem('collectivePoem');
+            allWords = [];
+            displayWords();
+            console.log('Local cache cleared. Reloading from sheet...');
+            loadWordsFromSheet();
+        }
+    </script>
+</body>
+</html>
